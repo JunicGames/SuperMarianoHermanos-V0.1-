@@ -96,6 +96,7 @@ void iniciar_juego() {
         // Movimiento básico de entorno para la demo gráfica
         if (ch == KEY_RIGHT && mario_x < 75) mario_x++;
         if (ch == KEY_LEFT && mario_x > 0) mario_x--;
+        
     }
     nodelay(stdscr, FALSE);
 }
