@@ -21,6 +21,7 @@ public:
             "  [4] Salir            "
         };
         int n = opts.size();
+        nodelay(stdscr, FALSE);
 
         while (true) {
             erase();
@@ -41,7 +42,7 @@ public:
             attroff(COLOR_PAIR(2) | A_BOLD);
 
             attron(COLOR_PAIR(1));
-            renderer.draw_centered(13, "  ( ^>)  [?]  (oo)  ||==||  ======  o  [#]  ~o~  |P ");
+            renderer.draw_centered(14, "  ( ^>)  [?]  (oo)  ||==||  ======  o  [#]  ~o~  |P ");
             attroff(COLOR_PAIR(1));
 
             for (int i = 0; i < n; i++) {
@@ -50,7 +51,7 @@ public:
                 } else {
                     attron(COLOR_PAIR(1));
                 }
-                renderer.draw_centered(20 + i, opts[i]);
+                renderer.draw_centered(16 + i, opts[i]);
                 attroff(COLOR_PAIR(4) | A_REVERSE | A_BOLD);
                 attroff(COLOR_PAIR(1));
             }
@@ -64,17 +65,18 @@ public:
             int ch = getch();
             if (ch == KEY_UP)    sel = (sel - 1 + n) % n;
             if (ch == KEY_DOWN)  sel = (sel + 1) % n;
-            if (ch == '\n' || ch == '\r' || ch == ' ') return sel;
-            if (ch == '1') return 0;
-            if (ch == '2') return 1;
-            if (ch == '3') return 2;
-            if (ch == '4') return 3;
-            if (ch == 'q' || ch == 'Q' || ch == 27) return 3;
+            if (ch == '\n' || ch == '\r' || ch == ' ') { nodelay(stdscr, TRUE); return sel; }
+            if (ch == '1') { nodelay(stdscr, TRUE); return 0; }
+            if (ch == '2') { nodelay(stdscr, TRUE); return 1; }
+            if (ch == '3') { nodelay(stdscr, TRUE); return 2; }
+            if (ch == '4') { nodelay(stdscr, TRUE); return 3; }
+            if (ch == 'q' || ch == 'Q' || ch == 27) { nodelay(stdscr, TRUE); return 3; }
         }
     }
 
     int mode_select_screen() {
         int sel = 0;
+        nodelay(stdscr, FALSE);
         while (true) {
             erase();
             renderer.draw_box(3, 15, 18, 50);
@@ -114,8 +116,8 @@ public:
             refresh();
             int ch = getch();
             if (ch == KEY_UP || ch == KEY_DOWN) sel ^= 1;
-            if (ch == '\n' || ch == '\r' || ch == ' ') return sel + 1;
-            if (ch == 27) return -1;
+            if (ch == '\n' || ch == '\r' || ch == ' ') { nodelay(stdscr, TRUE); return sel + 1; }
+            if (ch == 27) { nodelay(stdscr, TRUE); return -1; }
         }
     }
 

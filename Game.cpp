@@ -71,6 +71,9 @@ void Game::init_game() {
     mario.reset();
     level_time = 300;
 
+    std::fill(level.qblock_state.begin(), level.qblock_state.end(), 0);
+    for (auto &p : projectiles) p.active = false;
+
    // Inicializar Enemigos
         enemies.clear();
         int ex[] = {20, 35, 50, 65, 28};
@@ -173,10 +176,48 @@ void Game::update_mario(int key) {
             }
         }
 
-        mario.y += mario.vy;
+        int sgn = (mario.vy > 0) ? 1 : ((mario.vy < 0) ? -1 : 0);
+        int steps = std::abs(mario.vy);
+        mario.on_ground = false;
+        for (int s = 0; s < steps; s++) {
+            mario.y += sgn;
+            if (mario.y < 1) { mario.y = 1; mario.vy = 0; break; }
+            if (mario.y >= GROUND_ROW - 1) {
+                mario.y = GROUND_ROW - 1;
+                mario.vy = 0;
+                mario.on_ground = true;
+                break;
+            }
+            bool stopped = false;
+            if (sgn > 0) {
+                for (const auto &plat : level.platforms) {
+                    if (mario.y == plat[0] - 1 &&
+                        mario.x + 4 >= plat[1] &&
+                        mario.x <= plat[2]) {
+                        mario.vy = 0;
+                        mario.on_ground = true;
+                        stopped = true;
+                        break;
+                    }
+                }
+            } else if (sgn < 0) {
+                for (size_t i = 0; i < level.qblocks.size(); i++) {
+                    if (level.qblock_state[i]) continue;
+                    if (std::abs(mario.x - level.qblocks[i][1]) < 4 &&
+                        mario.y - 1 == level.qblocks[i][0]) {
+                        level.qblock_state[i] = 1;
+                        mario.score += 50;
+                        mario.state = 1;
+                        mario.vy = 0;
+                        stopped = true;
+                        break;
+                    }
+                }
+            }
+            if (stopped) break;
+        }
         if (mario.vy < 3) mario.vy++;
 
-        mario.on_ground = false;
         if (mario.y >= GROUND_ROW - 1) {
             mario.y = GROUND_ROW - 1;
             mario.vy = 0;

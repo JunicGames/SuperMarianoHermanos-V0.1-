@@ -1,4 +1,10 @@
 #include "Renderer.h"
+#include "Constantes.h"
+#include "Level.h"
+#include "Entidades/MarioPlayer.h"
+#include "Entidades/Enemy.h"
+#include "Entidades/Coin.h"
+#include "Entidades/Projectile.h"
 
 void Renderer::draw_board(const MarioPlayer& mario, const Level& level, const std::vector<Enemy>& enemies, const std::vector<Coin>& coins, const std::vector<Projectile>& projectiles) 
 {
@@ -34,7 +40,7 @@ void Renderer::draw_board(const MarioPlayer& mario, const Level& level, const st
         }
 
         // Tubos
-        attron(COLOR_PAIR(2));
+        attron(COLOR_PAIR(2) | A_BOLD);
         for (const auto &pipe : level.pipes) {
             int r = pipe[0];
             int c = pipe[1];
@@ -42,15 +48,15 @@ void Renderer::draw_board(const MarioPlayer& mario, const Level& level, const st
             mvprintw(r,     c, "||  ||");
             mvprintw(r + 1, c, "||  ||");
         }
-        attroff(COLOR_PAIR(2));
+        attroff(COLOR_PAIR(2) | A_BOLD);
 
         // Monedas
-        attron(COLOR_PAIR(3));
+        attron(COLOR_PAIR(3) | A_BOLD);
         for (const auto &coin : coins) {
             if (coin.active)
                 mvprintw(coin.y, coin.x, "o");
         }
-        attroff(COLOR_PAIR(3));
+        attroff(COLOR_PAIR(3) | A_BOLD);
 
         // Bandera meta
         attron(COLOR_PAIR(3) | A_BOLD);
@@ -62,42 +68,46 @@ void Renderer::draw_board(const MarioPlayer& mario, const Level& level, const st
         // Enemigos
         for (const auto &enemy : enemies) {
             if (!enemy.alive) continue;
-            attron(COLOR_PAIR(1) | A_BOLD);
             if (enemy.type == 0) {
+                attron(COLOR_PAIR(8) | A_BOLD);
                 mvprintw(enemy.y - 1, enemy.x, "(oo)");
                 mvprintw(enemy.y,     enemy.x, "/mm\\");
+                attroff(COLOR_PAIR(8) | A_BOLD);
             } else if (enemy.type == 1) {
+                attron(COLOR_PAIR(2) | A_BOLD);
                 mvprintw(enemy.y - 1, enemy.x, "(^^)");
                 mvprintw(enemy.y,     enemy.x, "[==]");
+                attroff(COLOR_PAIR(2) | A_BOLD);
             } else {
+                attron(COLOR_PAIR(1) | A_BOLD);
                 mvprintw(enemy.y, enemy.x, "[==]");
+                attroff(COLOR_PAIR(1) | A_BOLD);
             }
-            attroff(COLOR_PAIR(1) | A_BOLD);
         }
 
         // Proyectiles
-        attron(COLOR_PAIR(4) | A_BOLD);
+        attron(COLOR_PAIR(3) | A_BOLD);
         for (const auto &proj : projectiles) {
             if (proj.active)
                 mvprintw(proj.y, proj.x, "~o~");
         }
-        attroff(COLOR_PAIR(4) | A_BOLD);
+        attroff(COLOR_PAIR(3) | A_BOLD);
 
         // Mario
-        attron(COLOR_PAIR(4) | A_BOLD);
         if (mario.state == 0) {
+            attron(COLOR_PAIR(4) | A_BOLD);
             if (mario.dir == 1)  mvprintw(mario.y, mario.x, "( ^>)");
             else                 mvprintw(mario.y, mario.x, "(<^ )");
-        } else { 
-            if (mario.dir == 1) {
-                mvprintw(mario.y - 1, mario.x, "( ^>)");
-                mvprintw(mario.y,     mario.x, "( || )");
-            } else {
-                mvprintw(mario.y - 1, mario.x, "(<^ )");
-                mvprintw(mario.y,     mario.x, "( || )");
-            }
+            attroff(COLOR_PAIR(4) | A_BOLD);
+        } else {
+            attron(COLOR_PAIR(4) | A_BOLD);
+            if (mario.dir == 1)  mvprintw(mario.y - 1, mario.x, "( ^>)");
+            else                 mvprintw(mario.y - 1, mario.x, "(<^ )");
+            attroff(COLOR_PAIR(4) | A_BOLD);
+            attron(COLOR_PAIR(7) | A_BOLD);
+            mvprintw(mario.y, mario.x, "( || )");
+            attroff(COLOR_PAIR(7) | A_BOLD);
         }
-        attroff(COLOR_PAIR(4) | A_BOLD);
 }
         
 

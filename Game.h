@@ -5,6 +5,9 @@
 #include <unistd.h>
 
 #include "Entidades/MarioPlayer.h"
+#include "Entidades/Enemy.h"
+#include "Entidades/Coin.h"
+#include "Entidades/Projectile.h"
 #include "Constantes.h"
 #include "Level.h"
 #include "Renderer.h"
